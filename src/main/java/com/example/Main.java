@@ -57,8 +57,8 @@ public class Main {
   String db(Map<String, Object> model) {
     try (Connection connection = dataSource.getConnection()) {
       Statement stmt = connection.createStatement();
-      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
-      stmt.executeUpdate("INSERT INTO ticks VALUES (now())");
+      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticksname (tick timestamp, name varchar(30))");
+      stmt.executeUpdate("INSERT INTO ticksname VALUES (now(), '" + getRandomString() + "')");
       ResultSet rs = stmt.executeQuery("SELECT tick FROM ticks");
 
       ArrayList<String> output = new ArrayList<String>();
@@ -84,5 +84,21 @@ public class Main {
       return new HikariDataSource(config);
     }
   }
+
+  public String getRandomString() {
+    int leftLimit = 48; // numeral '0'
+    int rightLimit = 122; // letter 'z'
+    int targetStringLength = 10;
+    Random random = new Random();
+
+    String generatedString = random.ints(leftLimit, rightLimit + 1)
+      .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+      .limit(targetStringLength)
+      .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+      .toString();
+
+    //System.out.println(generatedString);
+    return generatedString;
+}
 
 }
